@@ -10,10 +10,12 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import AccountRepository from "../lib/accountRepository";
+import AccountRepository from "../lib/store/accountRepository";
 import { useForm } from "react-hook-form";
 import { CreateModel } from "../lib/viewmodels/CreateModel";
-import useAccount from "../lib/useAccount";
+import useAccount from "../lib/store/useAccount";
+import { AppContext } from "../lib/context";
+import Router from "next/router";
 
 function Copyright() {
   return (
@@ -49,11 +51,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function SignIn() {
+  const { dispatch } = React.useContext(AppContext); 
+  //useAccount("/", true);
   const classes = useStyles();
   const { register, errors, handleSubmit } = useForm<CreateModel>();
-  const [account, createAccount] = useAccount("/", true);
   async function create(model: CreateModel){
-    await createAccount(model);
+     dispatch({type: "create", username: "adem"});
+     //Router.push("/");
   }
   return (
     <Container component="main" maxWidth="xs">

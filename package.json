@@ -13,7 +13,8 @@
     "react-hook-form": "latest",
     "react-json-editor-ajrm": "latest",
     "dexie": "latest",
-    "lowdb": "latest"
+    "lowdb": "latest",
+    "idb-keyval": "latest"
   },
   "scripts": {
     "dev": "next",

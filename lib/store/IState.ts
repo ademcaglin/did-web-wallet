@@ -1,4 +1,6 @@
 export default interface IState{
-    selectedAccount?: string;
+    hasChanged: boolean;
     accounts: string[];
+    selectedAccount?: string;
 }
+

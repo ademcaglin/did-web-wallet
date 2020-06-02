@@ -1,6 +1,6 @@
 import Dexie from "dexie";
-import IAccount from "./models/IAccount";
-import IAccountItem from "./viewmodels/IAccountItem";
+import IAccount from "../models/IAccount";
+import IAccountItem from "../viewmodels/IAccountItem";
 
 export default class AccountRepository extends Dexie {
   accounts: Dexie.Table<IAccount, string> | any;
@@ -25,7 +25,7 @@ export default class AccountRepository extends Dexie {
 
   async getSelected(): Promise<IAccount | undefined> {
     let all: Array<IAccount> = await this.accounts.toArray();
-    return all.find(x => x.selected);
+    return all.find(x => x.id == "");
   }
 
   async getByUsername(username: string) {
@@ -39,8 +39,7 @@ export default class AccountRepository extends Dexie {
   async getAll(): Promise<Array<IAccountItem>> {
     let all: Array<IAccount> = await this.accounts.toArray();
     return all.map(x => <IAccountItem>({
-      username: x.username,
-      selected: x.selected
+      username: x.username
     }));
   }
 }

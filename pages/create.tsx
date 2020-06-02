@@ -1,9 +1,9 @@
 import React from "react";
 import SignIn from "../components/SignIn";
-import useAccount from "../lib/useAccount";
+import useRedirectToHome from "../lib/useRedirectToHome";
 
 export default function Create() {
-    useAccount("/", true);
+    useRedirectToHome();
     return (
         <SignIn />
     );
