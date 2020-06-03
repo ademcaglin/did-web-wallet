@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/styles";
 import { Avatar, Typography } from "@material-ui/core";
 import clsx from "clsx";
 import Link from "next/link";
+import { AppContext } from "../../../lib/context";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,7 +25,7 @@ const useStyles = makeStyles(theme => ({
 
 export default ({ ...rest }) => {
   const classes = useStyles();
-
+  const { state } = React.useContext(AppContext);
   const user = {
     avatar: "/images/avatars/avatar_11.png",
     bio: "ademcaglin"
@@ -36,9 +37,9 @@ export default ({ ...rest }) => {
         <Avatar className={classes.avatar} src={user.avatar} />
       </Link>
       <Typography className={classes.name} variant="h4">
-        Adem Çağlın
+        {state.currentUser?.displayName}
       </Typography>
-      <Typography variant="body2">{user.bio}</Typography>
+      <Typography variant="body2">{state.currentUser?.username}</Typography>
     </div>
   );
 };

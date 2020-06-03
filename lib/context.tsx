@@ -1,16 +1,20 @@
 import { useEffect, useReducer, Dispatch, createContext } from "react";
 import { State } from "./types/State";
 import { set, get } from "idb-keyval";
+import { User } from "./types/User";
 
 const initialState: State = {
-    users: []
+    users: [],
+    hasChanges: false
 };
+
 
 type UserActions =
     | { type: 'init', state: State }
-    | { type: 'create', username: string }
-    | { type: 'delete', id: string }
-    | { type: 'addkey', id: string };
+    | { type: 'create_user', newUser: User }
+    | { type: 'delete_key', id: string }
+    | { type: 'add_key', id: string }
+    | { type: 'select_user', newUser: User };
 
 function reducer(state: State, action: UserActions): State {
     switch (action.type) {
@@ -18,27 +22,42 @@ function reducer(state: State, action: UserActions): State {
             return {
                 ...state, ...action.state
             };
-        case 'create':
+        case 'create_user':
             return {
-                ...state, users: [
+                ...state,
+                users: state.currentUser ? [
                     ...state.users,
-                    {
-                        id: action.username,
-                        username: action.username,
-                        displayName: action.username
-                    }
-                ]
+                    { ...state.currentUser! }
+                ] : [],
+                currentUser: { ...action.newUser },
+                hasChanges: true
             };
-        case 'delete':
-            return { ...state, users: [...state.users?.filter(user => user.id !== action.id)] };
-        case 'addkey':
+        case 'select_user':
             return {
-                ...state, users: [
+                ...state,
+                users: state.currentUser ? [
+                    ...state.users,
+                    { ...state.currentUser! }
+                ] : [],
+                currentUser: { ...action.newUser },
+                hasChanges: true
+            };
+        case 'delete_key':
+            return {
+                ...state,
+                users: [...state.users.filter(user => user.id !== action.id)]
+            };
+        case 'add_key':
+            return {
+                ...state,
+                users: [
                     ...state.users,
                     {
                         id: action.id,
                         username: action.id,
-                        displayName: action.id
+                        displayName: action.id,
+                        operations: [],
+                        publicKeys: []
                     }
                 ]
             };
@@ -56,7 +75,8 @@ const AppProvider: React.FC = ({ children }) => {
     useEffect(() => {
         async function fetchUser() {
             let persistedState = await get<State>("userState");
-            if (persistedState && persistedState.users.length !== 0){
+            if (persistedState && persistedState.currentUser) {
+                console.log("State has initialized:" + JSON.stringify(state));
                 dispatch({ type: 'init', state: persistedState });
             }
         }
@@ -64,9 +84,8 @@ const AppProvider: React.FC = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        if (state.users.length !== 0) {
-            set('userState', state)
-        }
+        console.log("State has persisted:" + JSON.stringify(state));
+        set('userState', state)
     }, [state]);
 
     return (

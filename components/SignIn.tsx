@@ -16,6 +16,7 @@ import { CreateModel } from "../lib/viewmodels/CreateModel";
 import useAccount from "../lib/store/useAccount";
 import { AppContext } from "../lib/context";
 import Router from "next/router";
+import { User } from "../lib/types/User";
 
 function Copyright() {
   return (
@@ -51,13 +52,20 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function SignIn() {
-  const { dispatch } = React.useContext(AppContext); 
+  const { dispatch } = React.useContext(AppContext);
   //useAccount("/", true);
   const classes = useStyles();
   const { register, errors, handleSubmit } = useForm<CreateModel>();
-  async function create(model: CreateModel){
-     dispatch({type: "create", username: "adem"});
-     //Router.push("/");
+  async function create(model: CreateModel) {
+    let user: User = {
+      id: "1",
+      displayName: model.displayName,
+      username: model.username,
+      operations: [],
+      publicKeys: []
+    }
+    dispatch({ type: "create_user", newUser: user });
+    Router.push("/");
   }
   return (
     <Container component="main" maxWidth="xs">

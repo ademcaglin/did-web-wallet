@@ -8,7 +8,7 @@ export default () => {
     const [state, setState] = useState("loading");
     async function init() {
         let persistedState = await get<State>("userState");
-        let hasPersistedAccount = persistedState && persistedState.users.length !== 0;
+        let hasPersistedAccount = persistedState && persistedState.currentUser;
         if (!hasPersistedAccount) {
             setState("no_account");
             Router.push("/create");
