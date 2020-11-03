@@ -10,10 +10,8 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import AccountRepository from "../lib/store/accountRepository";
 import { useForm } from "react-hook-form";
 import { CreateModel } from "../lib/viewmodels/CreateModel";
-import useAccount from "../lib/store/useAccount";
 import { AppContext } from "../lib/context";
 import Router from "next/router";
 import { User } from "../lib/types/User";
@@ -53,10 +51,14 @@ const useStyles = makeStyles(theme => ({
 
 export default function SignIn() {
   const { dispatch } = React.useContext(AppContext);
+
   //useAccount("/", true);
   const classes = useStyles();
   const { register, errors, handleSubmit } = useForm<CreateModel>();
   async function create(model: CreateModel) {
+    // create an rsa key(store it in state)
+    let av = await PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable();
+    console.log(av); 
     let user: User = {
       id: "1",
       displayName: model.displayName,
@@ -65,7 +67,40 @@ export default function SignIn() {
       publicKeys: []
     }
     dispatch({ type: "create_user", newUser: user });
-    Router.push("/");
+    let challenge = new Uint8Array(32);
+    window.crypto.getRandomValues(challenge);
+
+    let userID = model.username;
+    var id = Uint8Array.from(window.atob(userID), c => c.charCodeAt(0));
+
+    var publicKey: PublicKeyCredentialCreationOptions = {
+      challenge: challenge,
+
+      rp: {
+        name: "Example Inc."
+      },
+
+      user: {
+        id: id,
+        name: model.username,
+        displayName: model.displayName
+      },
+
+      pubKeyCredParams: [
+        { type: "public-key", alg: -7 },
+        { type: "public-key", alg: -257 }
+      ]
+    };
+    try {
+      let credential: PublicKeyCredential = await navigator.credentials
+        .create({ publicKey: publicKey }) as PublicKeyCredential;
+     
+      console.log(credential?.rawId);
+    } catch (err) {
+
+    }
+
+    //Router.push("/");
   }
   return (
     <Container component="main" maxWidth="xs">
@@ -75,7 +110,7 @@ export default function SignIn() {
           <LockOutlinedIcon />
         </Avatar>
         <Typography component="h1" variant="h5">
-          Create DID Web Wallet
+          Create DID
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit(create)}>
           <TextField

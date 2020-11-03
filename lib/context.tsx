@@ -5,7 +5,8 @@ import { User } from "./types/User";
 
 const initialState: State = {
     users: [],
-    hasChanges: false
+    hasChanges: false,
+    keys: []
 };
 
 

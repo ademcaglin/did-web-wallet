@@ -6,4 +6,5 @@ export type State = {
     syncUri?: string;
     hasChanges: boolean;
     token?: string;
+    keys: CryptoKeyPair[];
 }
